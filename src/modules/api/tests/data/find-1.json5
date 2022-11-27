@@ -1,0 +1,14 @@
+[
+    {
+        id: 1680,
+        type: 'external',
+        source: 'telegram',
+        description: null,
+        entity: {
+            type: 'external',
+            displayName: 'test',
+            link: 'https://test',
+            id: 'test'
+        }
+    }
+]

@@ -1,0 +1,12 @@
+{
+    id: 1682,
+    type: 'telegram',
+    source: 'telegram',
+    description: '',
+    entity: {
+      type: 'telegram',
+      displayName: 't.me/test',
+      link: 'https://t.me/test',
+      id: 'test'
+    }
+}

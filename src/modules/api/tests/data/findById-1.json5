@@ -1,0 +1,21 @@
+[
+    {
+      id: 1,
+      type: 'user',
+      source: 'vk',
+      description: 'https://vk.com/wall-173402865_6768',
+      entity: {
+        type: 'user',
+        displayName: 'Максим Спицын',
+        link: 'https://vk.com/id257147793',
+        id: '257147793'
+      },
+      createdBy: {
+        id: '450822373',
+        displayName: 'Феликс Крутов',
+        link: 'https://vk.com/id450822373',
+        source: 'vk',
+        timestamp: 1563088169259
+      }
+    }
+]
