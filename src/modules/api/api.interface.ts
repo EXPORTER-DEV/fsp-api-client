@@ -98,3 +98,9 @@ export interface IEditRequest {
     description: string;
     source: RecordSourceEnum;
 }
+
+export interface IResolvedEntity {
+	id: string;
+	type: RecordTypeEnum;
+	detailed?: string[];
+}

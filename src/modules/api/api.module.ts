@@ -1,4 +1,4 @@
-import { ApiError, IApiConfig, IApiLogger, IApiResponse, ICreateRequest, ICreateRequestOtherEntity, ICreateRequestVkGroupEntity, ICreateRequestVkUserEntity, IEditRequest, IFindAllRequest, IFindAllResponse, IFindByIdRequest, IFindRequest } from './api.interface';
+import { ApiError, IApiConfig, IApiLogger, IApiResponse, ICreateRequest, ICreateRequestOtherEntity, ICreateRequestVkGroupEntity, ICreateRequestVkUserEntity, IEditRequest, IFindAllRequest, IFindAllResponse, IFindByIdRequest, IFindRequest, IResolvedEntity } from './api.interface';
 import { Axios, Method, AxiosRequestConfig } from 'axios';
 import { IRecordEnriched } from './models/record-enriched.model';
 import { RecordTypeEnum } from './models/record.model';
@@ -145,8 +145,47 @@ export class ApiModule {
 		return response;
 	}
 
+	async resolveAndCreate(url: string, request: Exclude<ICreateRequest<any, any>, 'entityId' | 'entity'>): Promise<IRecordEnriched | undefined> {
+		const resolved = await this.resolve(url);
+
+		if (resolved) {
+			const { type, id, detailed } = resolved;
+			const entity: ICreateRequestVkUserEntity | ICreateRequestVkGroupEntity | ICreateRequestOtherEntity = {};
+
+			if (type === RecordTypeEnum.user || type === RecordTypeEnum.group) {
+				if (!detailed) {
+					this.logger.error('resolveAndCreate', 'Failed get detailed info when resolving');
+					return undefined;
+				}
+
+				if (type === RecordTypeEnum.user) {
+					entity.first_name = detailed[0];
+					entity.last_name = detailed[1];
+				} else {
+					entity.name = detailed[0];
+				}
+			}
+
+			return this.create({
+				...request,
+				entityId: id,
+				entity,
+				type,
+			} as ICreateRequest<any, any>);
+		}
+
+		return undefined;
+	}
+
 	async edit(request: IEditRequest): Promise<IRecordEnriched | undefined> {
 		const { response, status } = await this.request<IRecordEnriched>('PATCH', 'record/enriched', request as Record<any, any>);
+
+		if (status === 404) return undefined;
+
+		return response;
+	}
+	async resolve(url: string): Promise<IResolvedEntity | undefined> {
+		const { response, status } = await this.request<IResolvedEntity>('GET', 'record/resolve', { url } as Record<any, any>);
 
 		if (status === 404) return undefined;
 
