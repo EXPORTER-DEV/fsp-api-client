@@ -1,12 +1,12 @@
 {
     id: 1682,
-    type: 'telegram',
+    type: 'user',
     source: 'telegram',
     description: '',
     entity: {
-      type: 'telegram',
-      displayName: 't.me/test',
-      link: 'https://t.me/test',
+      type: 'user',
+      displayName: 'test test',
+      link: 'https://vk.com/test',
       id: 'test'
     }
 }

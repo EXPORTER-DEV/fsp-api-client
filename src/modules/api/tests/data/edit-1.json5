@@ -1,0 +1,19 @@
+{
+  id: 1682,
+  type: 'telegram',
+  source: 'telegram',
+  description: 'test',
+  entity: {
+    type: 'telegram',
+    displayName: 't.me/test',
+    link: 'https://t.me/test',
+    id: 'test'
+  },
+  updatedBy: {
+    id: '1',
+    displayName: 'UNKNOWN',
+    link: '',
+    source: 'telegram',
+    timestamp: 1669832959611
+  }
+}

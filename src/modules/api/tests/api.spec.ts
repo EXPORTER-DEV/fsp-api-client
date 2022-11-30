@@ -84,16 +84,16 @@ describe('ApiModule', () => {
 		expect(api.findAll({offset: 0, limit: 10})).rejects.toEqual(new ApiError({isValidateError: true}));
 	});
 
-	it('Test createVkUser', async () => {
+	it('Test create VK user', async () => {
 		const data = JSON5.parse(fs.readFileSync(`${__dirname}/data/create-1.json5`, 'utf-8'));
 
 		nock(`http://${config.host}`)
 			.post('/record/enriched')
 			.reply(201, data);
 
-		const result = await api.createVkUser({
+		const result = await api.create({
 			entityId: 'test',
-			type: RecordTypeEnum.telegram,
+			type: RecordTypeEnum.user,
 			source: RecordSourceEnum.telegram,
 			creatorId: '1',
 			description: '',
@@ -105,24 +105,24 @@ describe('ApiModule', () => {
         
 		expect(result).toStrictEqual({
 			id: 1682,
-			type: 'telegram',
+			type: 'user',
 			source: 'telegram',
 			description: '',
 			entity: {
-				type: 'telegram',
-				displayName: 't.me/test',
-				link: 'https://t.me/test',
+				type: 'user',
+				displayName: 'test test',
+				link: 'https://vk.com/test',
 				id: 'test'
 			}
 		});
 	});
 
-	it('Test createVkUser [406]', async () => {
+	it('Test create Telegram entity [406]', async () => {
 		nock(`http://${config.host}`)
 			.post('/record/enriched')
 			.reply(406);
 
-		expect(api.createVkUser({
+		expect(api.create({
 			entityId: 'test',
 			type: RecordTypeEnum.telegram,
 			source: RecordSourceEnum.telegram,
@@ -133,5 +133,23 @@ describe('ApiModule', () => {
 				last_name: 'test',
 			}
 		})).rejects.toEqual(new ApiError({isDuplicate: true}));
+	});
+
+	it('Test edit entity', async () => {
+		const data = JSON5.parse(fs.readFileSync(`${__dirname}/data/edit-1.json5`, 'utf-8'));
+
+		nock(`http://${config.host}`)
+			.patch('/record/enriched')
+			.reply(200, data);
+
+		const result = await api.edit({
+			id: 1682,
+			updatorId: '1',
+			description: 'test',
+			source: RecordSourceEnum.telegram,
+		});
+
+		expect(result?.description).toStrictEqual('test');
+		expect(result?.updatedBy?.id).toStrictEqual('1');
 	});
 });
