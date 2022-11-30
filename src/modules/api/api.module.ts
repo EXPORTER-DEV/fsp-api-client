@@ -1,6 +1,7 @@
-import { ApiError, IApiConfig, IApiLogger, IApiResponse, ICreateRequest, ICreateRequestOtherEntity, ICreateRequestVkGroupEntity, ICreateRequestVkUserEntity, IFindAllRequest, IFindAllResponse, IFindByIdRequest, IFindRequest } from './api.interface';
+import { ApiError, IApiConfig, IApiLogger, IApiResponse, ICreateRequest, ICreateRequestOtherEntity, ICreateRequestVkGroupEntity, ICreateRequestVkUserEntity, IEditRequest, IFindAllRequest, IFindAllResponse, IFindByIdRequest, IFindRequest } from './api.interface';
 import { Axios, Method, AxiosRequestConfig } from 'axios';
 import { IRecordEnriched } from './models/record-enriched.model';
+import { RecordTypeEnum } from './models/record.model';
 
 export class ApiModule {
 	private client: Axios;
@@ -52,26 +53,38 @@ export class ApiModule {
 			headers: request._header?.split(/\r\n/gi)?.slice(1)?.filter((header: any) => header?.length > 0),
 		};
 
+		const logData = { status, data, payload, logRequest };
+
 		let parsedData: T;
 		try {
 			parsedData = data ? JSON.parse(data) : undefined;
 		} catch (err) {
-			this.logger.error('Got parse response error', { status, data, payload, logRequest });
+			this.logger.error('Got parse response error', logData);
 			throw new ApiError({isParseFailedError: true});
 		}
 
 		if (status === 400) {
-			this.logger.error('Got validation error',  { status, data, payload, logRequest });
+			this.logger.error('Got validation error', logData);
 			throw new ApiError({isValidateError: true});
 		}
 
+		if (status === 401) {
+			this.logger.error('Got authorization error', logData);
+			throw new ApiError({isAuthorizationError: true});
+		}
+
 		if (status === 406) {
-			this.logger.error('Got duplicate error', { status, data, payload, logRequest });
+			this.logger.error('Got duplicate error', logData);
 			throw new ApiError({isDuplicate: true});
 		}
 
+		if (status === 500) {
+			this.logger.error('Got internal error', logData);
+			throw new ApiError({isInternalError: true});
+		}
+
 		if (status === 503) {
-			this.logger.error('Got enrich error', { status, data, payload, logRequest });
+			this.logger.error('Got enrich error', logData);
 			throw new ApiError({isEnrichError: true});
 		}
 
@@ -117,7 +130,11 @@ export class ApiModule {
 		return response;
 	}
 
-	private async create(request: ICreateRequest<ICreateRequestVkUserEntity | ICreateRequestVkGroupEntity | ICreateRequestOtherEntity>): Promise<IRecordEnriched | undefined> {
+	async create(
+		request: ICreateRequest<ICreateRequestVkUserEntity, RecordTypeEnum.user>
+			| ICreateRequest<ICreateRequestVkGroupEntity, RecordTypeEnum.group>
+			| ICreateRequest<ICreateRequestOtherEntity, Exclude<RecordTypeEnum, RecordTypeEnum.group | RecordTypeEnum.user>>
+	): Promise<IRecordEnriched | undefined> {
 		const { response, status } = await this.request<IRecordEnriched>('POST', 'record/enriched', request as Record<any, any>);
 
 		if (status !== 201) {
@@ -128,15 +145,11 @@ export class ApiModule {
 		return response;
 	}
 
-	async createVkUser(request: ICreateRequest<ICreateRequestVkUserEntity>): Promise<IRecordEnriched | undefined> {
-		return this.create(request);
-	}
+	async edit(request: IEditRequest): Promise<IRecordEnriched | undefined> {
+		const { response, status } = await this.request<IRecordEnriched>('PATCH', 'record/enriched', request as Record<any, any>);
 
-	async createVkGroup(request: ICreateRequest<ICreateRequestVkGroupEntity>): Promise<IRecordEnriched | undefined> {
-		return this.create(request);
-	}
+		if (status === 404) return undefined;
 
-	async createOther(request: ICreateRequest<ICreateRequestOtherEntity>): Promise<IRecordEnriched | undefined> {
-		return this.create(request);
+		return response;
 	}
 }

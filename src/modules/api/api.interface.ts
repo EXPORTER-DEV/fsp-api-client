@@ -3,7 +3,7 @@ import { RecordSourceEnum, RecordTypeEnum } from './models/record.model';
 
 export interface IApiConfig {
     host: string;
-    port?: string;
+    port?: string | number;
     username: string;
     password: string;
 
@@ -20,10 +20,18 @@ export interface IApiError {
     isEnrichError?: boolean;
     isValidateError?: boolean;
     isParseFailedError?: boolean;
+	isAuthorizationError?: boolean;
+	isInternalError?: boolean;
 }
 
 export class ApiError implements IApiError {
 	isDuplicate?: boolean | undefined;
+	isEnrichError?: boolean;
+	isValidateError?: boolean;
+	isParseFailedError?: boolean;
+	isAuthorizationError?: boolean;
+	isInternalError?: boolean;
+
 	constructor(data: IApiError) {
 		Object.assign(this, data);
 	}
@@ -57,13 +65,20 @@ export interface IFindAllResponse {
     items: IRecordEnriched[];
 }
 
-export interface ICreateRequest<Entity> {
+export interface ICreateRequest<Entity, Type> {
     entityId: string; 
     entity: Entity;
-    type: RecordTypeEnum;
+    type: Type;
     source: RecordSourceEnum;
     description: string;
     creatorId: string;
+}
+
+export interface IEditRequest {
+    id: number;
+    source: RecordSourceEnum;
+    description: string;
+    updatorId: string;
 }
 
 export interface ICreateRequestVkGroupEntity {
