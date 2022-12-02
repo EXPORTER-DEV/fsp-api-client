@@ -1,3 +1,4 @@
+import { IEntity } from './models/entity.model';
 import { IRecordEnriched } from './models/record-enriched.model';
 import { RecordSourceEnum, RecordTypeEnum } from './models/record.model';
 
@@ -102,5 +103,6 @@ export interface IEditRequest {
 export interface IResolvedEntity {
 	id: string;
 	type: RecordTypeEnum;
-	detailed?: string[];
+    resolvedEntity: IEntity;
+	sourceEntity: Record<string, string>;
 }

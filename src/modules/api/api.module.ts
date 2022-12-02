@@ -149,20 +149,16 @@ export class ApiModule {
 		const resolved = await this.resolve(url);
 
 		if (resolved) {
-			const { type, id, detailed } = resolved;
+			const { type, id, sourceEntity } = resolved;
+
 			const entity: ICreateRequestVkUserEntity | ICreateRequestVkGroupEntity | ICreateRequestOtherEntity = {};
 
 			if (type === RecordTypeEnum.user || type === RecordTypeEnum.group) {
-				if (!detailed) {
-					this.logger.error('resolveAndCreate', 'Failed get detailed info when resolving');
-					return undefined;
-				}
-
 				if (type === RecordTypeEnum.user) {
-					entity.first_name = detailed[0];
-					entity.last_name = detailed[1];
+					entity.first_name = sourceEntity.first_name;
+					entity.last_name = sourceEntity.last_name;
 				} else {
-					entity.name = detailed[0];
+					entity.name = sourceEntity.name;
 				}
 			}
 
