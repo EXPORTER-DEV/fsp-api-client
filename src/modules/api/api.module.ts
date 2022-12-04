@@ -145,7 +145,7 @@ export class ApiModule {
 		return response;
 	}
 
-	async resolveAndCreate(url: string, request: Exclude<ICreateRequest<any, any>, 'entityId' | 'entity'>): Promise<IRecordEnriched | undefined> {
+	async resolveAndCreate(url: string, request: Omit<ICreateRequest<any, any>, 'entityId' | 'entity' | 'type'>): Promise<IRecordEnriched | undefined> {
 		const resolved = await this.resolve(url);
 
 		if (resolved) {
