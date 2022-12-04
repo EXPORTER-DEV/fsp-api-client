@@ -1,4 +1,4 @@
-import { ApiError, IApiConfig, IApiLogger, IApiResponse, ICreateRequest, ICreateRequestOtherEntity, ICreateRequestVkGroupEntity, ICreateRequestVkUserEntity, IEditRequest, IFindAllRequest, IFindAllResponse, IFindByIdRequest, IFindRequest, IResolvedEntity } from './api.interface';
+import { ApiError, IApiConfig, IApiLogger, IApiResponse, ICreateRequest, ICreateRequestOtherEntity, ICreateRequestVkGroupEntity, ICreateRequestVkUserEntity, IDeleteRequest, IEditRequest, IFindAllRequest, IFindAllResponse, IFindByIdRequest, IFindRequest, IResolvedEntity } from './api.interface';
 import { Axios, Method, AxiosRequestConfig } from 'axios';
 import { IRecordEnriched } from './models/record-enriched.model';
 import { RecordTypeEnum } from './models/record.model';
@@ -175,6 +175,14 @@ export class ApiModule {
 
 	async edit(request: IEditRequest): Promise<IRecordEnriched | undefined> {
 		const { response, status } = await this.request<IRecordEnriched>('PATCH', 'record/enriched', request as Record<any, any>);
+
+		if (status === 404) return undefined;
+
+		return response;
+	}
+
+	async delete(request: IDeleteRequest): Promise<IRecordEnriched | undefined> {
+		const { response, status } = await this.request<IRecordEnriched>('DELETE', 'record/enriched', request as Record<any, any>);
 
 		if (status === 404) return undefined;
 

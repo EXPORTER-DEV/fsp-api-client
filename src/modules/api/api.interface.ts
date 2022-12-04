@@ -100,6 +100,12 @@ export interface IEditRequest {
     source: RecordSourceEnum;
 }
 
+export interface IDeleteRequest {
+    id: number;
+    deletedId: string;
+    source: RecordSourceEnum;
+}
+
 export interface IResolvedEntity {
 	id: string;
 	type: RecordTypeEnum;
