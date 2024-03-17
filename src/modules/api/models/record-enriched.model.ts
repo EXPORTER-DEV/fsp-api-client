@@ -11,5 +11,5 @@ export interface IRecordEnriched {
 	type: RecordTypeEnum;
 	source: RecordSourceEnum;
 	description: string;
-	photos?: string[];
+	photos: string[];
 }
