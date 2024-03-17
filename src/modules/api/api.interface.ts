@@ -67,12 +67,13 @@ export interface IFindAllResponse {
 }
 
 export interface ICreateRequest<Entity, Type> {
-    entityId: string; 
+    entityId: string;
     entity: Entity;
     type: Type;
     source: RecordSourceEnum;
     description: string;
     creatorId: string;
+	photos?: string[];
 }
 
 export interface IEditRequest {
@@ -80,6 +81,7 @@ export interface IEditRequest {
     source: RecordSourceEnum;
     description: string;
     updatorId: string;
+	photos?: string[];
 }
 
 export interface ICreateRequestVkGroupEntity {
@@ -92,13 +94,6 @@ export interface ICreateRequestVkUserEntity {
 }
 
 export type ICreateRequestOtherEntity = Record<string, unknown>
-
-export interface IEditRequest {
-    id: number;
-    updatorId: string;
-    description: string;
-    source: RecordSourceEnum;
-}
 
 export interface IDeleteRequest {
     id: number;

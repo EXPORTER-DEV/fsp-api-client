@@ -28,4 +28,5 @@ export interface IRecord {
     deletedAt?: number;
     deletedBy?: string;
     deletedSource?: RecordSourceEnum;
+    photos?: string[];
 }
